@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>ApplyMate</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{width:380px;background:#080d18;font-family:-apple-system,'Inter',sans-serif;color:#e2e8f0;font-size:13px}
+
+    /* Header */
+    .hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(135deg,#1e1b4b,#312e81);border-bottom:1px solid rgba(99,102,241,.3)}
+    .hdr-l{display:flex;align-items:center;gap:9px}
+    .logo-box{width:28px;height:28px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:0 0 12px rgba(99,102,241,.4)}
+    .hdr-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:-.01em}
+    .hdr-sub{font-size:9px;color:rgba(99,102,241,.8);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+    .page-badge{font-size:9px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:3px 8px;border-radius:20px;font-weight:600}
+
+    /* Login */
+    #login-section{padding:20px 16px}
+    .connect-card{background:#0f1626;border:1px solid #1e293b;border-radius:12px;padding:16px}
+    .connect-card h3{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px}
+    .connect-card p{font-size:11px;color:#64748b;line-height:1.5;margin-bottom:14px}
+    .input{width:100%;background:#1a2236;border:1px solid #283448;border-radius:8px;padding:9px 12px;font-size:12px;color:#e2e8f0;outline:none;transition:border-color .15s;margin-bottom:10px}
+    .input:focus{border-color:#6366f1}
+    .input::placeholder{color:#3d4f6b}
+    .btn-connect{width:100%;padding:10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border:none;border-radius:9px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(79,70,229,.3);transition:all .15s}
+    .btn-connect:hover{transform:translateY(-1px)}
+    .btn-connect:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+    /* Profile strip */
+    #profile-strip{display:none;padding:8px 14px;background:#0c1424;border-bottom:1px solid #131e2e;align-items:center;gap:9px}
+    .pstrip-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+    .pstrip-name{font-size:12px;font-weight:600;color:#e2e8f0}
+    .pstrip-email{font-size:10px;color:#3d4f6b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .disc-btn{margin-left:auto;font-size:10px;color:#3d4f6b;background:none;border:none;cursor:pointer;padding:3px 7px;border-radius:5px;transition:color .15s}
+    .disc-btn:hover{color:#ef4444}
+
+    /* Resume Upload Strip */
+    #resume-strip{display:none;padding:8px 14px;background:#0b1826;border-bottom:1px solid #0f2030;align-items:center;gap:9px}
+    .rs-icon{font-size:14px;flex-shrink:0}
+    .rs-info{flex:1;min-width:0}
+    .rs-name{font-size:11px;font-weight:600;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .rs-meta{font-size:9px;color:#3d5a7a;margin-top:1px}
+    .rs-status-ok{font-size:9px;font-weight:700;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;padding:2px 7px;border-radius:10px;flex-shrink:0}
+    .rs-status-no{font-size:9px;font-weight:700;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:#fcd34d;padding:2px 7px;border-radius:10px;flex-shrink:0;cursor:pointer}
+    .rs-btn{font-size:10px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:3px 9px;border-radius:7px;cursor:pointer;font-weight:600;transition:all .15s;flex-shrink:0}
+    .rs-btn:hover{background:rgba(99,102,241,.25)}
+
+    /* Tabs */
+    .tabs{display:flex;background:#0b1120;border-bottom:1px solid #1a2236}
+    .tab{flex:1;padding:9px 6px;text-align:center;font-size:10px;font-weight:700;color:#3d4f6b;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;text-transform:uppercase;letter-spacing:.06em;user-select:none}
+    .tab.on{color:#a5b4fc;border-bottom-color:#6366f1;background:rgba(99,102,241,.06)}
+    .tab:hover:not(.on){color:#7c8fb0}
+
+    /* Scrollable body */
+    .tab-body{max-height:400px;overflow-y:auto;overflow-x:hidden}
+    .tab-body::-webkit-scrollbar{width:3px}
+    .tab-body::-webkit-scrollbar-thumb{background:#1e293b;border-radius:4px}
+
+    /* Job banner */
+    .job-banner{margin:10px 14px;background:#0f1a2e;border:1px solid #1e3a5f;border-radius:10px;padding:10px 12px}
+    .job-banner.on{border-color:#1e4a3a;background:#0b1f18}
+    .jb-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:#3d5a7a;margin-bottom:3px}
+    .jb-title{font-size:13px;font-weight:700;color:#e2e8f0;line-height:1.3}
+    .jb-co{font-size:10px;color:#6366f1;margin-top:2px}
+    .jb-level{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:12px;margin-top:5px}
+    .level-j{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#6ee7b7}
+    .level-m{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);color:#a5b4fc}
+    .level-s{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:#fcd34d}
+    .jb-none{font-size:11px;color:#3d4f6b;line-height:1.5}
+
+    /* Section */
+    .sec{padding:10px 14px;border-bottom:1px solid #0f1626}
+    .sec-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:#3d5a7a;margin-bottom:8px}
+
+    /* Upload box */
+    .upload-box{border:2px dashed #1e3a6a;border-radius:10px;padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+    .upload-box:hover,.upload-box.drag{border-color:#6366f1;background:rgba(99,102,241,.05)}
+    .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .ub-icon{font-size:24px;margin-bottom:8px}
+    .ub-title{font-size:12px;font-weight:700;color:#94a3b8;margin-bottom:3px}
+    .ub-sub{font-size:10px;color:#3d5a7a}
+    .ub-progress{height:3px;background:#1a2236;border-radius:3px;overflow:hidden;margin-top:12px;display:none}
+    .ub-progress-fill{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);width:0%;transition:width .3s;border-radius:3px}
+
+    /* Resume already stored */
+    .resume-stored{background:#0b1f18;border:1px solid #1e4a3a;border-radius:10px;padding:12px;display:flex;align-items:flex-start;gap:10px}
+    .rs-file-icon{font-size:22px;flex-shrink:0}
+    .rs-file-info{flex:1}
+    .rs-file-name{font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+    .rs-file-meta{font-size:10px;color:#3d5a7a}
+    .rs-replace{font-size:10px;color:#6366f1;cursor:pointer;background:none;border:none;margin-top:4px;padding:0;font-weight:600}
+    .rs-replace:hover{color:#a5b4fc}
+
+    /* ATS Gauge */
+    .ats-wrap{display:flex;align-items:center;gap:14px}
+    svg.gauge{flex-shrink:0}
+    .gauge-track{fill:none;stroke:#1a2236;stroke-width:10}
+    .gauge-fill{fill:none;stroke-width:10;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .9s cubic-bezier(.34,1.56,.64,1)}
+    .gauge-num{font:800 17px/1 system-ui;fill:#fff}
+    .gauge-sub{font:600 7px/1 system-ui;fill:#4b6280;text-transform:uppercase;letter-spacing:.06em}
+    .ats-score-big{font-size:30px;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .ats-score-label{font-size:10px;color:#64748b;margin-top:1px}
+    .ats-verdict{font-size:12px;font-weight:700;margin-top:5px}
+    .ats-tip{font-size:10px;color:#64748b;margin-top:3px;line-height:1.4}
+
+    /* Category bars */
+    .cat-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+    .cat-row:last-child{margin-bottom:0}
+    .cat-icon{font-size:12px;width:18px;text-align:center;flex-shrink:0}
+    .cat-name{font-size:11px;color:#94a3b8;width:110px;flex-shrink:0}
+    .cat-bar-bg{flex:1;height:5px;background:#1a2236;border-radius:3px;overflow:hidden}
+    .cat-bar-fg{height:100%;border-radius:3px;transition:width .8s ease}
+    .cat-pct{font-size:10px;font-weight:700;width:30px;text-align:right;flex-shrink:0}
+
+    /* Pills */
+    .kw-group{margin-bottom:10px}
+    .kw-group:last-child{margin-bottom:0}
+    .kw-group-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+    .kw-group-title.g{color:#10b981}.kw-group-title.r{color:#ef4444}.kw-group-title.a{color:#f59e0b}
+    .pills{display:flex;flex-wrap:wrap;gap:4px}
+    .pill{font-size:9px;font-weight:700;border-radius:20px;padding:3px 8px;border:1px solid}
+    .pill.g{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:#6ee7b7}
+    .pill.r{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5}
+    .pill.a{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:#fcd34d}
+    .pill.b{background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.3);color:#a5b4fc}
+
+    /* Action items */
+    .action-item{display:flex;gap:9px;padding:9px 10px;background:#0c1424;border:1px solid #1a2236;border-radius:8px;margin-bottom:6px}
+    .action-item:last-child{margin-bottom:0}
+    .action-num{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px}
+    .action-text{font-size:11px;color:#94a3b8;line-height:1.5}
+    .action-text b{color:#e2e8f0;font-weight:600}
+
+    /* Quick action buttons after results */
+    .qactions{display:flex;flex-direction:column;gap:6px}
+    .qa-btn{width:100%;padding:9px 12px;border:none;border-radius:9px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .15s;text-align:left}
+    .qa-btn.primary{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 3px 12px rgba(79,70,229,.3)}
+    .qa-btn.secondary{background:#0c1424;border:1px solid #1a2236;color:#94a3b8}
+    .qa-btn.secondary:hover{background:#111d32;color:#e2e8f0;border-color:#283448}
+    .qa-btn.danger{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+
+    /* Headline box */
+    .headline-box{background:#0c1424;border:1px solid #283448;border-radius:9px;padding:10px 12px;cursor:pointer;transition:border-color .15s;position:relative}
+    .headline-box:hover{border-color:#6366f1}
+    .hl-label{font-size:9px;color:#6366f1;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+    .hl-text{font-size:12px;color:#c7d2e0;line-height:1.5;font-style:italic}
+    .copy-hint{position:absolute;top:8px;right:10px;font-size:9px;color:#4b6280}
+
+    /* Form banner */
+    .form-banner{background:#0c1424;border:1px solid #1a2236;border-radius:9px;padding:10px 12px;margin-bottom:8px}
+    .form-banner.ok{border-color:#1e4a3a;background:#0b1f18}
+    .fb-label{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:#3d5a7a;font-weight:700;margin-bottom:3px}
+    .fb-val{font-size:13px;font-weight:700;color:#e2e8f0}
+    .fb-sub{font-size:10px;color:#6366f1;margin-top:1px}
+
+    /* Buttons */
+    .btn-fill{width:100%;padding:11px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border:none;border-radius:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(79,70,229,.35);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+    .btn-fill:hover:not(:disabled){transform:translateY(-1px)}
+    .btn-fill:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    .btn-analyze{width:100%;padding:11px;background:linear-gradient(135deg,#0ea5e9,#6366f1);border:none;border-radius:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(14,165,233,.3);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+    .btn-analyze:hover:not(:disabled){transform:translateY(-1px)}
+    .btn-analyze:disabled{opacity:.4;cursor:not-allowed}
+    .btn-ghost{width:100%;padding:8px;background:none;border:1px solid #1a2236;border-radius:9px;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px}
+    .btn-ghost:hover{background:#0f1626;color:#94a3b8;border-color:#283448}
+
+    /* Footer */
+    .footer{display:flex;justify-content:space-between;padding:7px 14px;background:#060c18;border-top:1px solid #0f1626}
+    a.flink,span.flink{font-size:9px;color:#2d3f58;text-decoration:none;transition:color .15s}
+    a.flink:hover{color:#6366f1}
+
+    /* Toast */
+    .toast{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#1a2236;border:1px solid #283448;border-radius:8px;padding:7px 14px;font-size:11px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap;color:#e2e8f0}
+    .toast.ok{border-color:#10b981;color:#6ee7b7}
+    .toast.err{border-color:#ef4444;color:#fca5a5}
+    .toast.show{opacity:1}
+
+    /* Spinner */
+    .spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:s .65s linear infinite;flex-shrink:0}
+    @keyframes s{to{transform:rotate(360deg)}}
+
+    .hidden{display:none!important}
+    .mt6{margin-top:6px}
+    .small{font-size:10px;color:#3d5a7a;line-height:1.4;margin-top:5px}
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="logo-box">⚡</div>
+    <div>
+      <div class="hdr-title">ApplyMate</div>
+      <div class="hdr-sub">ATS Analyzer & Autofill</div>
+    </div>
+  </div>
+  <span class="page-badge" id="page-badge">v2.0</span>
+</div>
+
+<!-- ═══ LOGIN ═══════════════════════════════════════ -->
+<div id="login-section">
+  <div style="padding:20px 16px">
+    <div class="connect-card">
+      <h3>Connect Your Account</h3>
+      <p>Get real-time ATS scoring, keyword gap analysis and 1-click autofill—on every job page you visit.</p>
+      <input class="input" type="password" id="token-input" placeholder="Paste your ApplyMate token…"/>
+      <button class="btn-connect" id="save-token-btn">⚡ Connect Account</button>
+      <p class="small" style="text-align:center;margin-top:10px">
+        Get token from <a href="https://applymatee.netlify.app/profile" target="_blank" style="color:#6366f1">ApplyMate Profile →</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP SHELL ════════════════════════════════════ -->
+<div id="app-shell" class="hidden">
+
+  <!-- Profile Strip -->
+  <div id="profile-strip" style="display:none">
+    <div class="pstrip-avatar" id="ps-avatar">U</div>
+    <div style="flex:1;min-width:0">
+      <div class="pstrip-name" id="ps-name"></div>
+      <div class="pstrip-email" id="ps-email"></div>
+    </div>
+    <button class="disc-btn" id="logout-btn">✕</button>
+  </div>
+
+  <!-- Resume Strip (always visible when logged in) -->
+  <div id="resume-strip" style="display:none">
+    <!-- No resume state -->
+    <div id="rs-no" style="display:flex;align-items:center;gap:9px;width:100%">
+      <span class="rs-icon">📄</span>
+      <div class="rs-info">
+        <div class="rs-name" style="color:#64748b">No resume uploaded</div>
+        <div class="rs-meta">Upload your resume PDF for best ATS results</div>
+      </div>
+      <label class="rs-status-no" id="rs-upload-trigger" style="cursor:pointer">
+        Upload
+        <input type="file" id="resume-file-hidden" accept=".pdf,.txt" style="display:none"/>
+      </label>
+    </div>
+    <!-- Has resume state -->
+    <div id="rs-ok" style="display:none;align-items:center;gap:9px;width:100%">
+      <span class="rs-icon">✅</span>
+      <div class="rs-info">
+        <div class="rs-name" id="rs-filename">resume.pdf</div>
+        <div class="rs-meta" id="rs-meta-text">Stored locally · Ready for analysis</div>
+      </div>
+      <span class="rs-status-ok">Loaded</span>
+      <label style="cursor:pointer;flex-shrink:0" title="Replace resume">
+        <span class="rs-btn">Replace</span>
+        <input type="file" id="resume-file-replace" accept=".pdf,.txt" style="display:none"/>
+      </label>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab on" data-tab="analyze">🎯 ATS Analyzer</div>
+    <div class="tab" data-tab="resume">📄 My Resume</div>
+    <div class="tab" data-tab="autofill">⚡ Autofill</div>
+  </div>
+
+  <!-- ══ ANALYZE TAB ══════════════════════════════════ -->
+  <div id="tab-analyze" class="tab-body">
+    <!-- Job Banner -->
+    <div id="job-banner" class="job-banner">
+      <div class="jb-label">Job on This Page</div>
+      <div class="jb-none" id="job-banner-none">Open a Naukri / LinkedIn / Indeed / Glassdoor job listing to begin.</div>
+      <div id="job-banner-data" class="hidden">
+        <div class="jb-title" id="jb-title">—</div>
+        <div class="jb-co" id="jb-co">—</div>
+        <div class="jb-level hidden" id="jb-level">Mid-Level</div>
+      </div>
+    </div>
+
+    <!-- No-resume warning -->
+    <div id="no-resume-warn" class="sec hidden">
+      <div style="background:#1a1200;border:1px solid #3d2f00;border-radius:9px;padding:10px 12px;font-size:11px;color:#fcd34d;line-height:1.5">
+        ⚠️ <b>No resume uploaded.</b> Go to the <b>My Resume</b> tab first to upload your PDF for accurate ATS scoring.
+      </div>
+    </div>
+
+    <!-- Analyze Button -->
+    <div class="sec">
+      <button class="btn-analyze" id="analyze-btn">
+        <span class="spin hidden" id="analyze-spin"></span>
+        <span id="analyze-label">🎯 Run ATS Analysis</span>
+      </button>
+      <p class="small mt6">Analysis runs locally — your resume is never sent to a 3rd party.</p>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results" class="hidden">
+      <!-- ATS Score -->
+      <div class="sec">
+        <div class="sec-label">ATS Compatibility Score</div>
+        <div class="ats-wrap">
+          <svg class="gauge" width="78" height="78" viewBox="0 0 78 78">
+            <circle class="gauge-track" cx="39" cy="39" r="30"/>
+            <circle class="gauge-fill" id="gauge-fill" cx="39" cy="39" r="30"
+              stroke="#6366f1" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+            <text class="gauge-num" x="39" y="37" text-anchor="middle" id="gauge-num">0%</text>
+            <text class="gauge-sub" x="39" y="49" text-anchor="middle">ATS Score</text>
+          </svg>
+          <div>
+            <div class="ats-score-big" id="ats-big">0%</div>
+            <div class="ats-score-label">ATS Match Score</div>
+            <div class="ats-verdict" id="ats-verdict"></div>
+            <div class="ats-tip" id="ats-tip"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category breakdown -->
+      <div class="sec">
+        <div class="sec-label">Score Breakdown</div>
+        <div id="cat-rows"></div>
+      </div>
+
+      <!-- Keywords -->
+      <div class="sec">
+        <div class="sec-label">Keyword Map</div>
+        <div class="kw-group">
+          <div class="kw-group-title g">✓ Your Strengths</div>
+          <div class="pills" id="kw-matched"></div>
+        </div>
+        <div class="kw-group mt6">
+          <div class="kw-group-title r">✗ Missing from Resume</div>
+          <div class="pills" id="kw-missing"></div>
+        </div>
+        <div class="kw-group mt6 hidden" id="kw-partial-group">
+          <div class="kw-group-title a">≈ Mentioned but Thin</div>
+          <div class="pills" id="kw-partial"></div>
+        </div>
+      </div>
+
+      <!-- 3-Step Action Plan -->
+      <div class="sec">
+        <div class="sec-label">Your 3-Step Action Plan</div>
+        <div id="action-list"></div>
+      </div>
+
+      <!-- Tailored Headline -->
+      <div class="sec">
+        <div class="sec-label">Suggested LinkedIn Headline</div>
+        <div class="headline-box" id="headline-box">
+          <div class="hl-label">Click to copy</div>
+          <div class="hl-text" id="hl-text">—</div>
+          <span class="copy-hint">📋</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="sec">
+        <div class="sec-label">Quick Actions</div>
+        <div class="qactions">
+          <button class="qa-btn primary" id="qa-copy-missing">📋 Copy Missing Keywords</button>
+          <button class="qa-btn secondary" id="qa-open-profile">✏️ Update Resume on ApplyMate</button>
+          <button class="qa-btn secondary" id="qa-re-analyze">🔄 Re-Analyze</button>
+        </div>
+      </div>
+    </div><!-- /results -->
+  </div><!-- /tab-analyze -->
+
+  <!-- ══ RESUME TAB ═══════════════════════════════════ -->
+  <div id="tab-resume" class="tab-body hidden">
+
+    <!-- Upload area (no resume) -->
+    <div class="sec" id="upload-area-section">
+      <div class="sec-label">Upload Your Resume</div>
+      <div class="upload-box" id="upload-box">
+        <input type="file" id="resume-file-tab" accept=".pdf,.txt"/>
+        <div class="ub-icon">📄</div>
+        <div class="ub-title">Drop your resume here or click to browse</div>
+        <div class="ub-sub">PDF or TXT · Max 5MB · Stored locally on your device</div>
+        <div class="ub-progress" id="upload-progress">
+          <div class="ub-progress-fill" id="upload-progress-fill"></div>
+        </div>
+      </div>
+      <p class="small mt6">Your resume is extracted and stored <b>locally in your browser</b>. It is never shared with third parties and is used only for ATS analysis on this device.</p>
+    </div>
+
+    <!-- Resume preview (has resume) -->
+    <div class="sec hidden" id="resume-preview-section">
+      <div class="sec-label">Stored Resume</div>
+      <div class="resume-stored">
+        <span class="rs-file-icon">📄</span>
+        <div class="rs-file-info">
+          <div class="rs-file-name" id="rp-filename">resume.pdf</div>
+          <div class="rs-file-meta" id="rp-meta">Extracted · Ready for analysis</div>
+          <button class="rs-replace" id="rp-remove-btn">Remove resume</button>
+        </div>
+      </div>
+
+      <!-- Word cloud stats -->
+      <div style="margin-top:10px;background:#0c1424;border:1px solid #1a2236;border-radius:9px;padding:10px 12px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#3d5a7a;margin-bottom:8px">Resume Stats</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="text-align:center;background:#080d18;border-radius:7px;padding:8px">
+            <div style="font-size:18px;font-weight:800;color:#a5b4fc" id="stat-words">0</div>
+            <div style="font-size:9px;color:#3d5a7a;margin-top:2px">Words</div>
+          </div>
+          <div style="text-align:center;background:#080d18;border-radius:7px;padding:8px">
+            <div style="font-size:18px;font-weight:800;color:#6ee7b7" id="stat-skills">0</div>
+            <div style="font-size:9px;color:#3d5a7a;margin-top:2px">Tech Skills Found</div>
+          </div>
+          <div style="text-align:center;background:#080d18;border-radius:7px;padding:8px">
+            <div style="font-size:18px;font-weight:800;color:#fcd34d" id="stat-verbs">0</div>
+            <div style="font-size:9px;color:#3d5a7a;margin-top:2px">Action Verbs</div>
+          </div>
+          <div style="text-align:center;background:#080d18;border-radius:7px;padding:8px">
+            <div style="font-size:18px;font-weight:800;color:#f9a8d4" id="stat-numbers">0</div>
+            <div style="font-size:9px;color:#3d5a7a;margin-top:2px">Quantified Results</div>
+          </div>
+        </div>
+      </div>
+
+      <label style="display:block;margin-top:10px">
+        <button class="btn-ghost" style="pointer-events:none">📤 Replace Resume</button>
+        <input type="file" id="resume-file-replace-2" accept=".pdf,.txt" style="display:none"/>
+      </label>
+    </div>
+
+  </div><!-- /tab-resume -->
+
+  <!-- ══ AUTOFILL TAB ══════════════════════════════════ -->
+  <div id="tab-autofill" class="tab-body hidden">
+    <div class="sec">
+      <div class="sec-label">Detected Application Form</div>
+      <div class="form-banner ok hidden" id="fb-ok">
+        <div class="fb-label">Form Found</div>
+        <div class="fb-val" id="fb-platform">Workday</div>
+        <div class="fb-sub" id="fb-url"></div>
+        <div class="pills" id="fb-fields" style="margin-top:6px"></div>
+      </div>
+      <div class="form-banner" id="fb-no">
+        <div class="fb-label">No Form Detected</div>
+        <div style="font-size:11px;color:#3d4f6b;line-height:1.5">Navigate to a job application page (Workday, Greenhouse, Lever, Ashby, SmartRecruiters) and click Autofill.</div>
+      </div>
+    </div>
+    <div class="sec">
+      <button class="btn-fill" id="autofill-btn" disabled>
+        <span class="spin hidden" id="fill-spin"></span>
+        ⚡ Autofill Application
+      </button>
+      <button class="btn-ghost" id="logout-btn-tab">Disconnect Account</button>
+    </div>
+  </div>
+</div><!-- /app-shell -->
+
+<!-- Footer -->
+<div class="footer">
+  <a class="flink" href="https://applymatee.netlify.app" target="_blank">applymatee.netlify.app</a>
+  <span class="flink">v2.0 · ApplyMate</span>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="popup.js"></script>
+</body>
+</html>
