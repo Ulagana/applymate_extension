@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ApplyMate Chrome Extension
 
 A browser extension that auto-fills job applications in 1 click using your ApplyMate profile.
@@ -53,3 +54,6 @@ Use the ApplyMate purple/indigo lightning bolt logo.
 - `popup.html` / `popup.js` - The extension popup UI
 - `content.js` - Injected into job pages to detect + fill forms
 - `background.js` - Service worker for badge & messaging
+=======
+# applymate_extension
+>>>>>>> 22cf06e1cc150230367f608ffa89149d7374281f
